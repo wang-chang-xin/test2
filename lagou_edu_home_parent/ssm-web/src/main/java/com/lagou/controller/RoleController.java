@@ -1,9 +1,6 @@
 package com.lagou.controller;
 
-import com.lagou.domain.Menu;
-import com.lagou.domain.ResponseResult;
-import com.lagou.domain.Role;
-import com.lagou.domain.RoleMenuVo;
+import com.lagou.domain.*;
 import com.lagou.service.MenuService;
 import com.lagou.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,6 +97,25 @@ public class RoleController {
     }
 
 
+    /*
+    获取当前角色拥有的 资源信息
+     */
+    @RequestMapping("/findResourceListByRoleId")
+    public ResponseResult findResourceListByRoleId(Integer roleId){
+        List<ResourceCategory> resourceCategoryByRoleId = roleService.getResourceCategoryByRoleId(roleId);
+        ResponseResult responseResult = new ResponseResult(true, 200, "获取当前角色的资源信息成功", resourceCategoryByRoleId);
+        return responseResult;
 
+    }
 
+    /*
+    为角色分配菜单
+     */
+    @RequestMapping("/roleContextResource")
+    public ResponseResult roleContextResource(@RequestBody RoleResourceVo roleResourceVo){
+
+        roleService.roleContextResource(roleResourceVo);
+
+        return new ResponseResult(true, 200, "为角色分配菜单成功", null);
+    }
 }

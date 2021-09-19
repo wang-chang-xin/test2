@@ -1,13 +1,12 @@
 package com.lagou.service.impl;
 
 import com.lagou.dao.RoleMapper;
-import com.lagou.domain.Role;
-import com.lagou.domain.RoleMenuVo;
-import com.lagou.domain.Role_menu_relation;
+import com.lagou.domain.*;
 import com.lagou.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -67,4 +66,38 @@ public class RoleServiceImpl implements RoleService {
 
         roleMapper.deleteRole(roleid);
     }
+
+    @Override
+    public List<ResourceCategory> getResourceCategoryByRoleId(Integer roleId) {
+        List<Integer> resourceCategoryIds = roleMapper.getResourceCategoryIdByRoleId(roleId);
+        List<ResourceCategory> list = new ArrayList<>();
+        for (Integer categoryId : resourceCategoryIds) {
+            ResourceCategory resourceCategory = roleMapper.getResourceCategoryByResourceCategoryId(categoryId);
+            list.add(resourceCategory);
+        }
+        return list;
+    }
+
+    @Override
+    public void roleContextResource(RoleResourceVo roleResourceVo) {
+
+        roleMapper.deleteRoleResourceRelation(roleResourceVo.getRoleId());
+
+        Role_resource_relation roleResourceRelation = new Role_resource_relation();
+        for (Integer resourceId : roleResourceVo.getResourceIdList()) {
+            Date date = new Date();
+            roleResourceRelation.setResourceId(resourceId);
+            roleResourceRelation.setRoleId(roleResourceVo.getRoleId());
+            roleResourceRelation.setCreatedTime(date);
+            roleResourceRelation.setUpdatedTime(date);
+
+            roleResourceRelation.setCreatedBy("system");
+            roleResourceRelation.setUpdatedBy("system");
+
+            roleMapper.saveNewRoleResourceRelation(roleResourceRelation);
+        }
+
+    }
+
+
 }
